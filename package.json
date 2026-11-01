@@ -1,15 +1,14 @@
 {
   "name": "cloudfs",
   "version": "1.0.0",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "services/storage-node"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+    "dev:api": "npm run dev --workspace=@cloudfs/api",
+    "dev:storage": "npm run dev --workspace=@cloudfs/storage-node",
+    "build": "npm run build --workspaces --if-present"
+  }
 }
