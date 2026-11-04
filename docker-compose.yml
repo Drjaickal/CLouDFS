@@ -1,0 +1,124 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: cloudfs-api
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      STORAGE_NODE_1_URL: http://storage-node-1:4001
+      STORAGE_NODE_2_URL: http://storage-node-2:4002
+      STORAGE_NODE_3_URL: http://storage-node-3:4003
+    ports:
+      - "4000:4000"
+    depends_on:
+      storage-node-1:
+        condition: service_healthy
+      storage-node-2:
+        condition: service_healthy
+      storage-node-3:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - cloudfs-network
+
+  storage-node-1:
+    build:
+      context: .
+      dockerfile: services/storage-node/Dockerfile
+    container_name: cloudfs-storage-node-1
+    environment:
+      NODE_ENV: production
+      PORT: 4001
+      NODE_ID: storage-node-1
+    ports:
+      - "4001:4001"
+    volumes:
+      - storage-node-1-data:/app/services/storage-node/data/storage-node-1
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - cloudfs-network
+
+  storage-node-2:
+    build:
+      context: .
+      dockerfile: services/storage-node/Dockerfile
+    container_name: cloudfs-storage-node-2
+    environment:
+      NODE_ENV: production
+      PORT: 4002
+      NODE_ID: storage-node-2
+    ports:
+      - "4002:4002"
+    volumes:
+      - storage-node-2-data:/app/services/storage-node/data/storage-node-2
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4002/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - cloudfs-network
+
+  storage-node-3:
+    build:
+      context: .
+      dockerfile: services/storage-node/Dockerfile
+    container_name: cloudfs-storage-node-3
+    environment:
+      NODE_ENV: production
+      PORT: 4003
+      NODE_ID: storage-node-3
+    ports:
+      - "4003:4003"
+    volumes:
+      - storage-node-3-data:/app/services/storage-node/data/storage-node-3
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4003/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - cloudfs-network
+
+networks:
+  cloudfs-network:
+    driver: bridge
+
+volumes:
+  storage-node-1-data:
+  storage-node-2-data:
+  storage-node-3-data:

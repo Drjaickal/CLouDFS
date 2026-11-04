@@ -8,3 +8,35 @@ build/
 coverage/
 *.log
 .DS_Store
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+**/dist/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Storage data
+services/storage-node/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary test files
+*-test*.txt
+test-file-*.bin
+*-copy.txt
+recovered-*.txt
+
+/# Local test artifacts
+/real-node*.txt
+/failure-test*.txt
+/persistence-test*.txt
+/downloaded-test*.txt
+/docker-replication-test*.txt
+/*.bin
